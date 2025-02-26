@@ -15,6 +15,7 @@ from llama_index.indices.base import BaseIndex
 from get_labor_law import get_labor_law 
 from selects_category import selects_category
 from conclusion import conclusion
+from use_laws_api import keyword_serch
 
 FILES_TO_DOWNLOAD = ["docstore.json", "index_store.json", "vector_store.json"]
 BUCKET_NAME = "chat_bot_vector_store"
@@ -27,7 +28,6 @@ storage_client = storage.Client()
 bucket = storage_client.bucket(BUCKET_NAME)
 
 USE_HISTORY = True
-reply_flg = False
 
 
 def get_object_updated_time(object_name: str) -> datetime:
@@ -182,8 +182,10 @@ def handle_message(event: MessageEvent) -> None:
         conclusion_responce = conclusion(user_id)
         conclusion_message = "相談内容を整理するために履歴を参考にし簡潔にまとめてください。"
         chatgpt_response = generate_response(conclusion_message, conclusion_responce)
-        chatgpt_response = chatgpt_response + "\n\n" + "https://www.notion.so/SODA-19ef6dbbf48380c892c9cd96c5322823"
+        chatgpt_response = chatgpt_response + "\n\n" + "https://almondine-pawpaw-133.notion.site/19bf6dbbf483801c9773c176b5b184a4?pvs=4"
 
+    if user_message in ["残業"]:
+        chatgpt_response = keyword_serch(user_message)
 
     # カテゴリ選択
     if chatgpt_response == "":
